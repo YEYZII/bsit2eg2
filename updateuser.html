@@ -1,0 +1,60 @@
+<?php
+include 'connection.php';
+$con = openCon();
+
+
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("Error: Invalid or missing ID.");
+}
+
+$id = intval($_GET['id']); 
+
+
+$sql = "SELECT * FROM users WHERE ID = $id";
+$result = mysqli_query($con, $sql);
+
+if (!$result) {
+    die("Database Query Failed: " . mysqli_error($con));
+}
+
+$row = mysqli_fetch_assoc($result);
+
+if (!$row) {
+    die("Error: No user found with ID: $id");
+}
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $lname = mysqli_real_escape_string($con, $_POST['lname']);
+    $fname = mysqli_real_escape_string($con, $_POST['fname']);
+
+    $updateSql = "UPDATE users SET LastName='$lname', FirstName='$fname' WHERE ID=$id";
+
+    if (mysqli_query($con, $updateSql)) {
+        echo "Record updated successfully. <a href='index.php'>Go Back</a>";
+        exit;
+    } else {
+        echo "Error updating record: " . mysqli_error($con);
+    }
+}
+
+closeCon($con);
+?>
+
+<html>
+<head>
+    <title>Update User</title>
+</head>
+<body>
+    <h2>Update User</h2>
+    <form method="POST">
+        <label for="lname">Last Name:</label>
+        <input id="lname" name="lname" type="text" value="<?php echo isset($row['LastName']) ? htmlspecialchars($row['LastName']) : ''; ?>" required>
+
+        <label for="fname">First Name:</label>
+        <input id="fname" name="fname" type="text" value="<?php echo isset($row['FirstName']) ? htmlspecialchars($row['FirstName']) : ''; ?>" required>
+
+        <input type="submit" value="Update">
+    </form>
+</body>
+</html>

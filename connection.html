@@ -1,0 +1,19 @@
+<?php
+function openCon() {
+    $server = "localhost";
+    $username = "root";
+    $password = ""; 
+    $dbname = "bsit2eg2"; 
+
+    $con = new mysqli($server, $username, $password, $dbname);
+
+    if ($con->connect_error) {
+        die("Connection failed: " . $con->connect_error);
+    }
+    return $con;
+}
+
+function closeCon($con) {
+    $con->close();
+}
+?>
